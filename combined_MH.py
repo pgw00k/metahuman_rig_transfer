@@ -2,11 +2,27 @@ from maya import cmds
 import maya.api.OpenMaya as om
 import os 
 
+# Rename embeddedNodeRL4 node to rigLogicNode
+rigNode='rigLogicNode'
+rnode=cmds.ls(rigNode)
+if len(rnode)!=1:
+    rnode=cmds.ls(type='embeddedNodeRL4')[0]
+    cmds.rename(rnode[0], 'rigLogicNode')
+
 #Enter Wrapped Head Mesh Name below
-enter_wrapped_mesh_name = "NewMesh"
+#enter_wrapped_mesh_name = "|head_lod0_grp|head_lod0_mesh"
+enter_wrapped_mesh_name=cmds.ls(sl=1,l=1,an=1)[0]
 
 #Enter folder path below where additional scripts are stored. Do not change slash to forward slash
-folder_path = "D:\ZOE01 Current\Maya\Meta_Maya\scripts\metahuman original"
+folder_path_default = "F:\Git_Projects\metahuman_rig_transfer"
+folder_path=folder_path_default
+'''
+folder_path_sel = cmds.fileDialog2(cap="Select Script Folder",fm=3)[0]
+if folder_path_sel != None:
+    folder_path=folder_path_sel
+else:
+    folder_path=folder_path_default
+'''
 python_folder_path = folder_path.replace("\\", "/")
 
 #Alright lets go
@@ -120,8 +136,9 @@ def rl4_node_op():
     rigBones = []
     rigBoneStrippedList = []
     jto = 0
-    while jto < 2563:
-        jto_ID = 'rl4Embedded_Nasim_rl.jntTranslationOutputs[%s]'%jto
+    jcount= len(cmds.listAttr('rigLogicNode.jntTranslationOutputs',m=1));
+    while jto < jcount:
+        jto_ID = 'rigLogicNode.jntTranslationOutputs[%s]'%jto
         rigBoneLists.append(cmds.connectionInfo( jto_ID, destinationFromSource = 1))
         rigBones.append(rigBoneLists[jto][0])
         rigBoneStripped = rigBones[jto][:-11]
@@ -198,7 +215,7 @@ def rl4_node_op():
         
         #create ADL node
         cmds.createNode( 'addDoubleLinear', n=adlName2 )
-        rlno = 'rl4Embedded_Nasim_rl.jntTranslationOutputs[%s]'%bone_TransformID
+        rlno = 'rigLogicNode.jntTranslationOutputs[%s]'%bone_TransformID
         adlNNI = '%s.input1'%adlName2
         
         #Connect ADL to RL4
@@ -218,6 +235,6 @@ def rl4_node_op():
         
 rl4_node_op()
 cmds.select( clear=True )
-cmds.delete('spine_04')
+#cmds.delete('spine_04')
 #confirm box
 cmds.confirmDialog( title='Reset Done', message='Proceed now', button=['Yes'], defaultButton='Yes', dismissString='No' )
