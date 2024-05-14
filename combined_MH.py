@@ -7,14 +7,16 @@ rigNode='rigLogicNode'
 rnode=cmds.ls(rigNode)
 if len(rnode)!=1:
     rnode=cmds.ls(type='embeddedNodeRL4')[0]
-    cmds.rename(rnode[0], 'rigLogicNode')
+    cmds.rename(rnode, rigNode)
+else:
+    print("Can not found rigLogicNode")
 
 #Enter Wrapped Head Mesh Name below
 #enter_wrapped_mesh_name = "|head_lod0_grp|head_lod0_mesh"
 enter_wrapped_mesh_name=cmds.ls(sl=1,l=1,an=1)[0]
 
 #Enter folder path below where additional scripts are stored. Do not change slash to forward slash
-folder_path_default = "F:\Git_Projects\metahuman_rig_transfer"
+folder_path_default = "D:\Project\Git\metahuman_rig_transfer"
 folder_path=folder_path_default
 '''
 folder_path_sel = cmds.fileDialog2(cap="Select Script Folder",fm=3)[0]
